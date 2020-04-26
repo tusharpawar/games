@@ -52,6 +52,21 @@ func (paddle *paddle) draw(pixels []byte) {
 	}
 }
 
+func (paddle *paddle) update(keyState []uint8) {
+	if keyState[sdl.SCANCODE_UP] != 0 {
+		paddle.y--
+	}
+	if keyState[sdl.SCANCODE_DOWN] != 0 {
+		paddle.y++
+	}
+}
+
+func clear(pixels []byte) {
+	for i := range pixels {
+		pixels[i] = 0
+	}
+}
+
 func setPixel(x, y int, c color, pixels []byte) {
 	index := (y*winWidth + x) * 4
 	if index < len(pixels)-4 && index >= 0 {
@@ -94,6 +109,8 @@ func main() {
 	player1 := paddle{pos{100, 100}, 20, 100, color{255, 255, 255}}
 	ball := ball{pos{300, 300}, 20, 0, 0, color{255, 255, 255}}
 
+	keyState := sdl.GetKeyboardState()
+
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -101,6 +118,10 @@ func main() {
 				return
 			}
 		}
+		clear(pixels)
+
+		player1.update(keyState)
+
 		player1.draw(pixels)
 		ball.draw(pixels)
 
